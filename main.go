@@ -51,8 +51,8 @@ func main() {
 	for {
 		v, _ := mem.VirtualMemory()
 
-		log.Infof("Buffers: %v\n", (datasize.ByteSize(v.Buffers) * datasize.B).String())
-		log.Infof("Cached: %v\n", (datasize.ByteSize(v.Cached) * datasize.B).String())
+		log.Infof("Buffers: %v", (datasize.ByteSize(v.Buffers) * datasize.B).String())
+		log.Infof("Cached: %v", (datasize.ByteSize(v.Cached) * datasize.B).String())
 
 		if datasize.ByteSize(v.Buffers) > buffersLimit || datasize.ByteSize(v.Cached) > cachedLimit {
 			log.Debugf("Cleaning memory...")

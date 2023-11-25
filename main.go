@@ -16,7 +16,7 @@ var resetCacheOption = flag.Int("reset_cache_option", 1, "Option to reset")
 var buffersLimitString = flag.String("buffers_limit", "10 MB", "Maximum cache buffer size")
 var cachedLimitString = flag.String("cached_limit", "900 MB", "Maximum cached memory size")
 var dropCachesFilePath = flag.String("drop_caches_file_path", "/var/host_sys_vm/drop_caches", "Mounted host file path")
-var info = flag.Bool("info_log", false, "print info logs")
+var debug = flag.Bool("debug_log", false, "print debug logs")
 
 func checkErr(e error) {
 	if e != nil {
@@ -32,8 +32,8 @@ func init() {
 	})
 	// Output to stdout instead of the default stderr
 	log.SetOutput(os.Stdout)
-	if *info {
-		log.SetLevel(log.InfoLevel)
+	if *debug {
+		log.SetLevel(log.DebugLevel)
 	}
 }
 
@@ -55,14 +55,14 @@ func main() {
 		log.Infof("Cached: %v\n", (datasize.ByteSize(v.Cached) * datasize.B).String())
 
 		if datasize.ByteSize(v.Buffers) > buffersLimit || datasize.ByteSize(v.Cached) > cachedLimit {
-			log.Infof("Cleaning memory...")
+			log.Debugf("Cleaning memory...")
 
 			err := os.WriteFile(*dropCachesFilePath, []byte(strconv.Itoa(*resetCacheOption)), 0644)
 			checkErr(err)
 		}
 
 		// Sleep until interval
-		log.Infof("Sleeping for %v\n seconds", *interval)
+		log.Debugf("Sleeping for %v\n seconds", *interval)
 		time.Sleep(time.Duration(*interval) * time.Second)
 	}
 }

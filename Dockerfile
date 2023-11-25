@@ -18,6 +18,6 @@ FROM scratch
 
 LABEL maintainer="currycan <ansandy@foxmail.com>"
 
-COPY --from=builder /go/src/github.com/currycan/flusher/flusher /usr/bin/flusher
+COPY --from=builder /go/src/github.com/currycan/kube-node-memory-flusher/flusher /usr/bin/flusher
 
 CMD ["flusher"]

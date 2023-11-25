@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: memory-flusher
+  namespace: kube-system
+  labels:
+    app: memory-flusher
+spec:
+  selector:
+    matchLabels:
+      app: memory-flusher
+  template:
+    metadata:
+      labels:
+        app: memory-flusher
+    spec:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      containers:
+        - name: flusher
+          image: eugenelukin/k8s-memory-flusher:latest
+          imagePullPolicy: Always
+          command: ['flusher', '--interval', '360', '--reset_cache_option', '1', '--buffers_limit', '100 MB', '--cached_limit', '800 MB', '--drop_caches_file_path', '/var/host_sys_vm/drop_caches']
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          volumeMounts:
+            - mountPath: /var/host_sys_vm
+              name: host-system-proc
+            - name: localtime
+              mountPath: /etc/localtime
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: host-system-proc
+          hostPath:
+            path: /proc/sys/vm
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
